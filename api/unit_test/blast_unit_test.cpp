@@ -28,19 +28,18 @@
  */
 
 /** @file blast_unit_test.cpp
- * Unit tests for the genetic code singleton
+ * Miscellaneous BLAST unit tests
  */
 
 #include <ncbi_pch.hpp>
-#include <algo/blast/api/sseqloc.hpp>
-#include <algo/blast/core/gencode_singleton.h>
-#include <algo/blast/api/blast_aux.hpp>
+#include <algo/blast/core/blast_def.h>
 
 // Keep Boost's inclusion of <limits> from breaking under old WorkShop versions.
 #if defined(numeric_limits)  &&  defined(NCBI_NUMERIC_LIMITS)
 #  undef numeric_limits
 #endif
 
+#define BOOST_AUTO_TEST_MAIN    // this should only be defined here!
 #include <boost/test/auto_unit_test.hpp>
 
 #ifndef BOOST_AUTO_TEST_CASE
@@ -49,41 +48,55 @@
 
 #ifndef SKIP_DOXYGEN_PROCESSING
 
-USING_NCBI_SCOPE;
-USING_SCOPE(blast);
-USING_SCOPE(objects);
+//USING_NCBI_SCOPE;
+//USING_SCOPE(blast);
+//USING_SCOPE(objects);
 
-BOOST_AUTO_TEST_CASE(GenCodeSingleton_Find)
+BOOST_AUTO_TEST_CASE(SSeqRangeIntersect)
 {
-    CAutomaticGenCodeSingleton instance;
+    SSeqRange a = SSeqRangeNew(0, 0);
+    SSeqRange b = SSeqRangeNew(30, 67);
+    BOOST_REQUIRE(SSeqRangeIntersectsWith(&a, &b) == FALSE);
 
-    Uint4 gc_id = 1;
-    TAutoUint1ArrayPtr gc = FindGeneticCode(gc_id);
-    Int2 rv = GenCodeSingletonAdd((Uint4)gc_id, gc.get());
-    BOOST_CHECK_EQUAL(rv, 0);
+    BOOST_REQUIRE(SSeqRangeIntersectsWith(&a, NULL) == FALSE);
+    BOOST_REQUIRE(SSeqRangeIntersectsWith(NULL, &b) == FALSE);
+    BOOST_REQUIRE(SSeqRangeIntersectsWith(NULL, NULL) == FALSE);
 
-    Uint1* gc_str =  GenCodeSingletonFind(gc_id);
-    BOOST_CHECK(gc_str != NULL);
+    a = SSeqRangeNew(0, 0);
+    b = SSeqRangeNew(0, 67);
+    BOOST_REQUIRE(SSeqRangeIntersectsWith(&a, &b));
 
-    gc_id = 5;
-    gc_str =  GenCodeSingletonFind(gc_id);
-    BOOST_CHECK(gc_str == NULL);
+    a = SSeqRangeNew(0, 0);
+    b = SSeqRangeNew(0, 0);
+    BOOST_REQUIRE(SSeqRangeIntersectsWith(&a, &b));
 
-    gc = FindGeneticCode(gc_id);
-    rv = GenCodeSingletonAdd((Uint4)gc_id, gc.get());
-    BOOST_CHECK_EQUAL(rv, 0);
-    gc_str =  GenCodeSingletonFind(gc_id);
-    BOOST_CHECK(gc_str != NULL);
+    a = SSeqRangeNew(10, 40);
+    b = SSeqRangeNew(10, 40);
+    BOOST_REQUIRE(SSeqRangeIntersectsWith(&a, &b));
+
+    a = SSeqRangeNew(10, 40);
+    b = SSeqRangeNew(20, 30);
+    BOOST_REQUIRE(SSeqRangeIntersectsWith(&a, &b));
+
+    a = SSeqRangeNew(10, 40);
+    b = SSeqRangeNew(30, 67);
+    BOOST_REQUIRE(SSeqRangeIntersectsWith(&a, &b));
+
+    a = SSeqRangeNew(10, 40);
+    b = SSeqRangeNew(4, 32);
+    BOOST_REQUIRE(SSeqRangeIntersectsWith(&a, &b));
+
+    a = SSeqRangeNew(10, 40);
+    b = SSeqRangeNew(0, 10);
+    BOOST_REQUIRE(SSeqRangeIntersectsWith(&a, &b));
+
+    a = SSeqRangeNew(10, 40);
+    b = SSeqRangeNew(40, 100);
+    BOOST_REQUIRE(SSeqRangeIntersectsWith(&a, &b));
+
+    a = SSeqRangeNew(10, 40);
+    b = SSeqRangeNew(80, 142);
+    BOOST_REQUIRE(SSeqRangeIntersectsWith(&a, &b) == FALSE);
 }
 
-BOOST_AUTO_TEST_CASE(GenCodeSingleton_NonExistentGeneticCode)
-{
-    CAutomaticGenCodeSingleton instance;
-
-    Uint4 gc_id = 500;
-    TAutoUint1ArrayPtr gc = FindGeneticCode(gc_id);
-    BOOST_CHECK(gc.get() == NULL);
-    Int2 rv = GenCodeSingletonAdd((Uint4)gc_id, gc.get());
-    BOOST_CHECK(rv == BLASTERR_INVALIDPARAM);
-}
 #endif /* SKIP_DOXYGEN_PROCESSING */
