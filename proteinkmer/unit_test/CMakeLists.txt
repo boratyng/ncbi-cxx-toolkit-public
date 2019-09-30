@@ -2,11 +2,4 @@
 # $Id$
 #############################################################################
 
-NCBI_begin_lib(igblast)
-  NCBI_sources(igblast)
-  NCBI_uses_toolkit_libraries(
-    xalnmgr xblast
-  )
-  NCBI_project_watchers(madden camacho)
-NCBI_end_lib()
-
+NCBI_add_app(proteinkmer_unit_test)
