@@ -1,7 +1,5 @@
 #############################################################################
-# $Id$
+#  $Id$
 #############################################################################
 
-NCBI_add_library(blast_sra_input)
-NCBI_add_subdirectory(unit_test)
-
+NCBI_add_app(blastsrainput_unit_test)
