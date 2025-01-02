@@ -1,3 +1,5 @@
+A CHANGE FOR TESTING GIT
+
 This directory contains the implementation of the core of the BLAST algorithm
 (also known as the BLAST engine). In the future, NCBI may provide a simple
 C API to access this implementation, in the meantime, working with these
